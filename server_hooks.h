@@ -41,3 +41,11 @@
 #ifndef SERVER_ON_CLIENT_DESTROYED
 #define SERVER_ON_CLIENT_DESTROYED() ((void)0)
 #endif
+
+// The exception type the file-length decoder throws on malformed input (caught
+// in the FILE_FOLLOWS path). Defaults to the engine's own server::SerialisationError
+// (from length.h); a host that uses its own length codec redefines this to that
+// codec's error type (Xapiand: Xapian::SerialisationError).
+#ifndef SERVER_LENGTH_ERROR
+#define SERVER_LENGTH_ERROR ::server::SerialisationError
+#endif

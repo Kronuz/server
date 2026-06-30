@@ -485,7 +485,7 @@ BaseClient<ClientImpl>::io_cb_read(ev::io &watcher, int revents) noexcept
 						file_size_buffer.clear();
 						buf_data += processed;
 						received -= processed;
-					} catch (const server::SerialisationError&) {
+					} catch (const SERVER_LENGTH_ERROR&) {
 						break;
 					}
 

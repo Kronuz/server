@@ -53,17 +53,23 @@ Logging is the no-op `L_*` family (`server_trace.h`); the `__repr__` debug
 helpers use empty-string color shims. All of these are `SERVER_*_HEADER`
 redirects so a host restores its real logger/colors.
 
-## Prototype shortcuts (what a productionized version changes)
+## Host integration (root vs compat/)
 
-- **`client_compressor.h` is a raw pass-through.** The real LZ4 + heap-xxHash
-  file-transfer codec (used only by Xapiand replication, never by an HTTP server)
-  is replaced by a length-prefixed pass-through so the prototype needs neither
-  lz4 nor xxHash. A real build links `Kronuz/compressors`.
-- **`io.hh`, `length.h`, `epoch.hh`, `strings.hh`, `colors.h` are minimal vendored
-  shims.** A productionized lib would depend on the extracted `Kronuz/*` siblings
-  (or keep these as the standalone defaults).
-- **UDP / the cluster protocols are out of scope here** — they layer on the same
-  base the same way HTTP does, and are a later leg.
+The library is split so a host can drop its own richer versions of the
+boundary headers in:
 
-The only external dependency is `Kronuz/queue` (the client write queue), pulled
-via FetchContent.
+- **Root** — the engine itself (`worker`, `tcp`, `base_server`, `base_client`,
+  `buffer`, `client_compressor`) plus the redirectable seams (`server_hooks.h`,
+  `server_trace.h`). A host always takes these.
+- **`compat/`** — standalone shims for headers that would collide with a host's
+  own: `io.hh`, `length.h`, `colors.h`, `strings.hh`, `epoch.hh`,
+  `readable_revents.hh`, `likely.h`, and vendored `ev/`. Standalone, `compat/` is
+  on the include path. A host (Xapiand) does **not** add it, so its own `io.hh` /
+  `length.h` / `colors.h` / `strings.hh` / `ev/` win, and only the engine headers
+  come from this library.
+
+Dependencies (via FetchContent): `Kronuz/queue` (the client write queue) and
+`Kronuz/compressors` (the LZ4 file-transfer codec in `client_compressor.h`,
+real — used by replication's whole-database copy). UDP and the cluster protocols
+are out of scope here; they layer on the same base the same way HTTP does and are
+a later leg.
