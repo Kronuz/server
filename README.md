@@ -1,4 +1,6 @@
-# server (Leg-1 prototype)
+# server (archived Leg-1 prototype)
+
+This historical libev prototype is archived. Use [reactor](https://github.com/Kronuz/reactor) and [http](https://github.com/Kronuz/http) for maintained networking components, or [prism](https://github.com/Kronuz/prism) for an assembled HTTP application server. These are architectural successors, not drop-in replacements for the prototype’s CRTP API. Existing commits remain available for pinned consumers.
 
 A generic, search-agnostic HTTP/TCP server engine extracted from
 [Xapiand](https://github.com/Kronuz/Xapiand): the libev reactor, the TCP socket
